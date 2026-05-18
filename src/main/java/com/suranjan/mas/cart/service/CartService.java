@@ -80,4 +80,18 @@ public class CartService {
 
         return new CartResponse(items);
     }
+
+    public String removeFromCart(User user, Long productId) {
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+
+        CartItem cartItem = cartItemRepository
+                .findByCartAndProduct(cart, product)
+                .orElseThrow(() -> new RuntimeException("Item not in cart"));
+
+        cartItemRepository.delete(cartItem);
+
+        return "Item removed successfully";
+    }
 }

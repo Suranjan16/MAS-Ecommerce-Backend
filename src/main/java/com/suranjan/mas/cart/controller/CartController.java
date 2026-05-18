@@ -5,6 +5,7 @@ import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.auth.repository.UserRepository;
 import com.suranjan.mas.cart.dto.AddToCartRequest;
 import com.suranjan.mas.cart.dto.CartResponse;
+import com.suranjan.mas.cart.entity.Cart;
 import com.suranjan.mas.cart.service.CartService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
