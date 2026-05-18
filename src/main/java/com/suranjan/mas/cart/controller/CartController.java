@@ -4,6 +4,7 @@ package com.suranjan.mas.cart.controller;
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.auth.repository.UserRepository;
 import com.suranjan.mas.cart.dto.AddToCartRequest;
+import com.suranjan.mas.cart.dto.CartResponse;
 import com.suranjan.mas.cart.service.CartService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +27,16 @@ public class CartController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return cartService.addToCart(user, request);
+    }
+
+    @GetMapping
+    public CartResponse getCart(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return cartService.getCart(user);
     }
 }
