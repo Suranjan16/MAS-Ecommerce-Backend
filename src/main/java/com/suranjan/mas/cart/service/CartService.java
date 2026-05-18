@@ -2,6 +2,8 @@ package com.suranjan.mas.cart.service;
 
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.cart.dto.AddToCartRequest;
+import com.suranjan.mas.cart.dto.CartItemResponse;
+import com.suranjan.mas.cart.dto.CartResponse;
 import com.suranjan.mas.cart.entity.Cart;
 import com.suranjan.mas.cart.entity.CartItem;
 import com.suranjan.mas.cart.repository.CartItemRepository;
@@ -9,6 +11,8 @@ import com.suranjan.mas.cart.repository.CartRepository;
 import com.suranjan.mas.product.entity.Product;
 import com.suranjan.mas.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CartService {
@@ -58,5 +62,22 @@ public class CartService {
         cartItemRepository.save(cartItem);
 
         return "Product added successfully";
+    }
+
+    public CartResponse getCart(User user) {
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        List<CartItemResponse> items = cart.getItems()
+                .stream()
+                .map(item -> new CartItemResponse(
+                        item.getProduct().getName(),
+                        item.getProduct().getPrice(),
+                        item.getQuantity()
+                ))
+                .toList();
+
+        return new CartResponse(items);
     }
 }
