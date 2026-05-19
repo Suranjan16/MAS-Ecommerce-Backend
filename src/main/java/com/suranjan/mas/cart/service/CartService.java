@@ -94,4 +94,18 @@ public class CartService {
 
         return "Item removed successfully";
     }
+
+    public String updateQuantity(User user, Long productId, Integer quantity) {
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+
+        CartItem cartItem = cartItemRepository.findByCartAndProduct(cart, product).orElseThrow(() -> new RuntimeException("Item not found"));
+
+        cartItem.setQuantity(quantity);
+
+        cartItemRepository.save(cartItem);
+
+        return "Quantity updated successfully";
+    }
 }

@@ -48,4 +48,17 @@ public class CartController {
 
         return cartService.removeFromCart(user,productId);
     }
+
+    @PutMapping("/update/{productId}")
+    public String updateQuantity
+            (@PathVariable Long productId,
+             @RequestParam Integer quantity,
+             Authentication authentication)
+    {
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return cartService.updateQuantity(user,productId, quantity);
+    }
 }
