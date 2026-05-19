@@ -61,4 +61,13 @@ public class CartController {
 
         return cartService.updateQuantity(user,productId, quantity);
     }
+
+    @DeleteMapping("/clear")
+    public String clearCart(Authentication authentication) {
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return cartService.clearCart(user);
+    }
 }
