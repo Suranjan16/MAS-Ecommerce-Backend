@@ -95,4 +95,36 @@ public class OrderService {
                 })
                 .toList();
     }
+
+    public OrderResponse getOrderById(
+            User user,
+            Long orderId
+    ) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new RuntimeException("Order not found"));
+
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access");
+        }
+
+        List<OrderItemResponse> items =
+                order.getItems()
+                        .stream()
+                        .map(item -> new OrderItemResponse(
+                                item.getProduct().getName(),
+                                item.getQuantity(),
+                                item.getPrice()
+                        ))
+                        .toList();
+
+        return new OrderResponse(
+                order.getId(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                order.getCreatedAt(),
+                items
+        );
+    }
 }
