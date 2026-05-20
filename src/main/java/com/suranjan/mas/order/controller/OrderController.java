@@ -2,7 +2,7 @@ package com.suranjan.mas.order.controller;
 
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.auth.repository.UserRepository;
-import com.suranjan.mas.order.entity.Order;
+import com.suranjan.mas.order.dto.OrderResponse;
 import com.suranjan.mas.order.service.OrderService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getOrders(Authentication authentication) {
+    public List<OrderResponse> getOrders(Authentication authentication) {
 
         String email = authentication.getName();
 
@@ -39,5 +39,19 @@ public class OrderController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return orderService.getOrders(user);
+    }
+
+    @GetMapping("/{orderId}")
+    public OrderResponse getOrderById(
+            @PathVariable Long orderId,
+            Authentication authentication
+    ) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return orderService.getOrderById(user, orderId);
     }
 }
