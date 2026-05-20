@@ -4,6 +4,8 @@ import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.cart.entity.Cart;
 import com.suranjan.mas.cart.entity.CartItem;
 import com.suranjan.mas.cart.repository.CartRepository;
+import com.suranjan.mas.order.dto.OrderItemResponse;
+import com.suranjan.mas.order.dto.OrderResponse;
 import com.suranjan.mas.order.entity.Order;
 import com.suranjan.mas.order.entity.OrderItem;
 import com.suranjan.mas.order.repository.OrderRepository;
@@ -67,7 +69,30 @@ public class OrderService {
         return "Order placed successfully";
     }
 
-    public List<Order> getOrders(User user) {
-        return orderRepository.findByUser(user);
+    public List<OrderResponse> getOrders(User user) {
+
+        return orderRepository.findByUser(user)
+                .stream()
+                .map(order -> {
+
+                    List<OrderItemResponse> items =
+                            order.getItems()
+                                    .stream()
+                                    .map(item -> new OrderItemResponse(
+                                            item.getProduct().getName(),
+                                            item.getQuantity(),
+                                            item.getPrice()
+                                    ))
+                                    .toList();
+
+                    return new OrderResponse(
+                            order.getId(),
+                            order.getTotalAmount(),
+                            order.getStatus(),
+                            order.getCreatedAt(),
+                            items
+                    );
+                })
+                .toList();
     }
 }
