@@ -66,4 +66,8 @@ public class OrderService {
 
         return "Order placed successfully";
     }
+
+    public List<Order> getOrders(User user) {
+        return orderRepository.findByUser(user);
+    }
 }
