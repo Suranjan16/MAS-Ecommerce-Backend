@@ -54,4 +54,12 @@ public class OrderController {
 
         return orderService.getOrderById(user, orderId);
     }
+
+    @PutMapping("/status/{orderId}")
+    public String updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestParam String status
+    ) {
+        return orderService.updateOrderStatus(orderId, status);
+    }
 }
