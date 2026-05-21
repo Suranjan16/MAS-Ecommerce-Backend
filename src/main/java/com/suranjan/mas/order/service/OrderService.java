@@ -164,4 +164,27 @@ public class OrderService {
 
         return "Order status updated";
     }
+
+    public String cancelOrder(User user, Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new RuntimeException("Order not found"));
+
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access");
+        }
+
+        if (order.getStatus().equalsIgnoreCase("DELIVERED")) {
+            throw new RuntimeException(
+                    "Delivered order cannot be cancelled"
+            );
+        }
+
+        order.setStatus("CANCELLED");
+
+        orderRepository.save(order);
+
+        return "Order cancelled successfully";
+    }
 }
