@@ -64,7 +64,6 @@ public class PaymentService {
 
         order.setPaymentStatus("PAID");
 
-        order.setStatus("PAID");
 
         orderRepository.save(order);
 

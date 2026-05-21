@@ -1,6 +1,7 @@
 package com.suranjan.mas.payment.controller;
 
 import com.suranjan.mas.payment.dto.PaymentResponse;
+import com.suranjan.mas.payment.dto.PaymentVerificationRequest;
 import com.suranjan.mas.payment.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +23,13 @@ public class PaymentController {
     ) throws Exception {
 
         return paymentService.createPaymentOrder(orderId);
+    }
+
+    @PostMapping("/verify")
+    public String verifyPayment(
+            @RequestBody PaymentVerificationRequest request
+    ) {
+
+        return paymentService.verifyPayment(request);
     }
 }
