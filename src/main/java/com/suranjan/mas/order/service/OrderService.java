@@ -127,4 +127,20 @@ public class OrderService {
                 items
         );
     }
+
+    public String updateOrderStatus(
+            Long orderId,
+            String status
+    ) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() ->
+                        new RuntimeException("Order not found"));
+
+        order.setStatus(status);
+
+        orderRepository.save(order);
+
+        return "Order status updated";
+    }
 }
