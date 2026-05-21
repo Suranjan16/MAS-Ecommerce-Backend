@@ -62,8 +62,9 @@ public class PaymentService {
                 request.getRazorpayPaymentId()
         );
 
-        order.setPaymentStatus("PAID");
+        order.setPaymentMethod("RAZORPAY");
 
+        order.setPaymentStatus("PAID");
 
         orderRepository.save(order);
 
