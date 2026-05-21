@@ -4,6 +4,7 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.suranjan.mas.order.repository.OrderRepository;
 import com.suranjan.mas.payment.dto.PaymentResponse;
+import com.suranjan.mas.payment.dto.PaymentVerificationRequest;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +43,31 @@ public class PaymentService {
                 razorpayOrder.get("amount"),
                 razorpayOrder.get("currency")
         );
+    }
+
+    public String verifyPayment(
+            PaymentVerificationRequest request
+    ) {
+
+        com.suranjan.mas.order.entity.Order order =
+                orderRepository.findById(
+                                request.getOrderId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Order not found"
+                                ));
+
+        order.setPaymentId(
+                request.getRazorpayPaymentId()
+        );
+
+        order.setPaymentStatus("PAID");
+
+        order.setStatus("PAID");
+
+        orderRepository.save(order);
+
+        return "Payment verified successfully";
     }
 }
