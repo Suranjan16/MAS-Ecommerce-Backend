@@ -25,6 +25,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
+    private String paymentMethod;
 
 
     public Order() {
@@ -88,5 +89,13 @@ public class Order {
 
     public void setItems(List<OrderItem> items) {
         this.items = items;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

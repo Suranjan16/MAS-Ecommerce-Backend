@@ -39,6 +39,8 @@ public class OrderService {
         order.setUser(user);
         order.setStatus("PENDING");
         order.setCreatedAt(LocalDateTime.now());
+        order.setPaymentMethod("RAZORPAY");
+        order.setPaymentStatus("PENDING");
 
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -90,7 +92,10 @@ public class OrderService {
                             order.getTotalAmount(),
                             order.getStatus(),
                             order.getCreatedAt(),
-                            items
+                            items,
+                            order.getPaymentMethod(),
+                            order.getPaymentStatus(),
+                            order.getPaymentId()
                     );
                 })
                 .toList();
@@ -124,7 +129,10 @@ public class OrderService {
                 order.getTotalAmount(),
                 order.getStatus(),
                 order.getCreatedAt(),
-                items
+                items,
+                order.getPaymentMethod(),
+                order.getPaymentStatus(),
+                order.getPaymentId()
         );
     }
 
