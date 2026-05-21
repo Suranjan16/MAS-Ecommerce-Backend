@@ -66,4 +66,22 @@ public class OrderController {
     ) {
         return orderService.updateOrderStatus(orderId, status);
     }
+
+    @PutMapping("/cancel/{orderId}")
+    public String cancelOrder(
+            @PathVariable Long orderId,
+            Authentication authentication
+    ) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        return orderService.cancelOrder(
+                user,
+                orderId
+        );
+    }
 }
