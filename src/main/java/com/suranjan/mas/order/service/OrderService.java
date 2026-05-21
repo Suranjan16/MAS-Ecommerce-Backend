@@ -10,6 +10,7 @@ import com.suranjan.mas.order.entity.Order;
 import com.suranjan.mas.order.entity.OrderItem;
 import com.suranjan.mas.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import com.suranjan.mas.order.dto.PlaceOrderRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public String placeOrder(User user) {
+    public String placeOrder(User user, PlaceOrderRequest request) {
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
@@ -35,9 +36,22 @@ public class OrderService {
             throw new RuntimeException("Cart is empty");
         }
 
+        String paymentMethod = request.getPaymentMethod();
+
+        if (paymentMethod == null) {
+            throw new RuntimeException("Payment method is required");
+        }
+
+        if (!paymentMethod.equalsIgnoreCase("COD")
+                && !paymentMethod.equalsIgnoreCase("RAZORPAY")) {
+            throw new RuntimeException("Invalid payment method");
+        }
+
         Order order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
+        order.setPaymentMethod(paymentMethod.toUpperCase());
+        order.setPaymentStatus("PENDING");
         order.setCreatedAt(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -53,7 +67,8 @@ public class OrderService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setPrice(cartItem.getProduct().getPrice());
 
-            totalAmount += cartItem.getProduct().getPrice() * cartItem.getQuantity();
+            totalAmount += cartItem.getProduct().getPrice()
+                    * cartItem.getQuantity();
 
             orderItems.add(orderItem);
         }
@@ -90,7 +105,10 @@ public class OrderService {
                             order.getTotalAmount(),
                             order.getStatus(),
                             order.getCreatedAt(),
-                            items
+                            items,
+                            order.getPaymentMethod(),
+                            order.getPaymentStatus(),
+                            order.getPaymentId()
                     );
                 })
                 .toList();
@@ -124,7 +142,10 @@ public class OrderService {
                 order.getTotalAmount(),
                 order.getStatus(),
                 order.getCreatedAt(),
-                items
+                items,
+                order.getPaymentMethod(),
+                order.getPaymentStatus(),
+                order.getPaymentId()
         );
     }
 

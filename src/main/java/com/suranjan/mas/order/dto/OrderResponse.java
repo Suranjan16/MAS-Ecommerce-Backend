@@ -14,18 +14,29 @@ public class OrderResponse {
 
     private List<OrderItemResponse> items;
 
+    private String paymentMethod;
+    private String paymentStatus;
+    private String paymentId;
+
+
     public OrderResponse(
             Long orderId,
             Double totalAmount,
             String status,
             LocalDateTime createdAt,
-            List<OrderItemResponse> items
+            List<OrderItemResponse> items,
+            String paymentMethod,
+            String paymentStatus,
+            String paymentId
     ) {
         this.orderId = orderId;
         this.totalAmount = totalAmount;
         this.status = status;
         this.createdAt = createdAt;
         this.items = items;
+        this.paymentId = paymentId;
+        this.paymentStatus = paymentStatus;
+        this.paymentMethod = paymentMethod;
     }
 
     public Long getOrderId() {
@@ -46,5 +57,17 @@ public class OrderResponse {
 
     public List<OrderItemResponse> getItems() {
         return items;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public String getPaymentId() {
+        return paymentId;
     }
 }

@@ -3,6 +3,7 @@ package com.suranjan.mas.order.controller;
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.auth.repository.UserRepository;
 import com.suranjan.mas.order.dto.OrderResponse;
+import com.suranjan.mas.order.dto.PlaceOrderRequest;
 import com.suranjan.mas.order.service.OrderService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +22,16 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public String placeOrder(Authentication authentication) {
+    public String placeOrder(
+            @RequestBody PlaceOrderRequest request,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return orderService.placeOrder(user);
+        return orderService.placeOrder(user, request);
     }
 
     @GetMapping
