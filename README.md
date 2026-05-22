@@ -1,6 +1,9 @@
 # MAS Ecommerce Backend
 
 Backend API for the MAS Ecommerce application built using Spring Boot.
+## Author
+
+Suranjan Maity
 
 ## Features
 
@@ -64,7 +67,3 @@ Backend API for the MAS Ecommerce application built using Spring Boot.
 
 ```bash
 git clone https://github.com/Suranjan16/MAS-Ecommerce-Backend
-
-## Author
-
-Suranjan Maity
