@@ -78,7 +78,13 @@ public class CartService {
                 ))
                 .toList();
 
-        return new CartResponse(items);
+        double totalAmount = items.stream()
+                .mapToDouble(item ->
+                        item.getPrice() * item.getQuantity()
+                )
+                .sum();
+
+        return new CartResponse(items, totalAmount);
     }
 
     public String removeFromCart(User user, Long productId) {
