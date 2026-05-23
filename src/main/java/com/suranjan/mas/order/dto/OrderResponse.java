@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderResponse {
+
     private Long orderId;
 
     private Double totalAmount;
@@ -15,9 +16,10 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
 
     private String paymentMethod;
-    private String paymentStatus;
-    private String paymentId;
 
+    private String paymentStatus;
+
+    private String paymentId;
 
     public OrderResponse(
             Long orderId,
@@ -34,9 +36,9 @@ public class OrderResponse {
         this.status = status;
         this.createdAt = createdAt;
         this.items = items;
-        this.paymentId = paymentId;
-        this.paymentStatus = paymentStatus;
         this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+        this.paymentId = paymentId;
     }
 
     public Long getOrderId() {
