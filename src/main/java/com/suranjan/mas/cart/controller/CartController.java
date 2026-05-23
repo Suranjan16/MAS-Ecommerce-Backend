@@ -41,12 +41,16 @@ public class CartController {
     }
 
     @DeleteMapping("/remove/{productId}")
-    public String removeFromCart(@PathVariable Long productId, Authentication authentication) {
+    public String removeFromCart(
+            @PathVariable Long productId,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return cartService.removeFromCart(user,productId);
+        return cartService.removeFromCart(user, productId);
     }
 
     @PutMapping("/update/{productId}")

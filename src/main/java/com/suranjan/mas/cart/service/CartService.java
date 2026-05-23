@@ -72,6 +72,7 @@ public class CartService {
         List<CartItemResponse> items = cart.getItems()
                 .stream()
                 .map(item -> new CartItemResponse(
+                        item.getProduct().getId(),
                         item.getProduct().getName(),
                         item.getProduct().getPrice(),
                         item.getQuantity()
@@ -88,6 +89,7 @@ public class CartService {
     }
 
     public String removeFromCart(User user, Long productId) {
+
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
@@ -96,11 +98,11 @@ public class CartService {
 
         CartItem cartItem = cartItemRepository
                 .findByCartAndProduct(cart, product)
-                .orElseThrow(() -> new RuntimeException("Item not in cart"));
+                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
 
         cartItemRepository.delete(cartItem);
 
-        return "Item removed successfully";
+        return "Product removed from cart";
     }
 
     public String updateQuantity(User user, Long productId, Integer quantity) {
