@@ -121,9 +121,10 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        cartItemRepository.deleteAll(
-                cart.getItems()
-        );
+        List<CartItem> cartItemsToDelete =
+                new ArrayList<>(cart.getItems());
+
+        cartItemRepository.deleteAll(cartItemsToDelete);
 
         cart.getItems().clear();
 
