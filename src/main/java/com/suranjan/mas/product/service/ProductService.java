@@ -28,6 +28,7 @@ public class ProductService {
         product.setCategory(request.getCategory());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
+        product.setImageUrl(request.getImageUrl());
 
         Product savedProduct = repository.save(product);
 
@@ -36,7 +37,8 @@ public class ProductService {
                 savedProduct.getName(),
                 savedProduct.getCategory(),
                 savedProduct.getPrice(),
-                savedProduct.getQuantity()
+                savedProduct.getQuantity(),
+                savedProduct.getImageUrl()
         );
     }
 
@@ -45,22 +47,26 @@ public class ProductService {
     }
 
     public Product getProduct(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+        return repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
-    public Product updateProduct(Long id,Product product) {
-        Product existingProduct = repository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+    public Product updateProduct(Long id, Product product) {
 
-            existingProduct.setName(product.getName());
-            existingProduct.setCategory(product.getCategory());
-            existingProduct.setPrice(product.getPrice());
-            existingProduct.setQuantity(product.getQuantity());
+        Product existingProduct = repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
-            return repository.save(existingProduct);
+        existingProduct.setName(product.getName());
+        existingProduct.setCategory(product.getCategory());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setQuantity(product.getQuantity());
+        existingProduct.setImageUrl(product.getImageUrl());
 
+        return repository.save(existingProduct);
     }
 
     public void deleteProduct(Long id) {
+
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
@@ -75,16 +81,23 @@ public class ProductService {
         return repository.findByNameContaining(name);
     }
 
-    public Page<Product> getProductsWithPaginationAndSorting(int page, int size, String field, String direction) {
-
-        Sort sort = direction.equalsIgnoreCase("asc") ?
-                Sort.by(field).ascending() :
-                Sort.by(field).descending();
+    public Page<Product> getProductsWithPaginationAndSorting(
+            int page,
+            int size,
+            String field,
+            String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(field).ascending()
+                : Sort.by(field).descending();
 
         return repository.findAll(PageRequest.of(page, size, sort));
     }
 
-    public List<Product> getProductsByPriceRange(double minPrice, double maxPrice) {
+    public List<Product> getProductsByPriceRange(
+            double minPrice,
+            double maxPrice
+    ) {
         return repository.findByPriceBetween(minPrice, maxPrice);
     }
 
@@ -98,7 +111,8 @@ public class ProductService {
             String sortField,
             String direction
     ) {
-        Specification<Product> spec = (root, query, cb) -> cb.conjunction();
+        Specification<Product> spec =
+                (root, query, cb) -> cb.conjunction();
 
         if (category != null && !category.isEmpty()) {
             spec = spec.and((root, query, cb) ->
@@ -124,7 +138,8 @@ public class ProductService {
                 ? Sort.by(sortField).descending()
                 : Sort.by(sortField).ascending();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
 
         return repository.findAll(spec, pageable);
     }
