@@ -8,6 +8,7 @@ import com.suranjan.mas.cart.repository.CartRepository;
 import com.suranjan.mas.order.dto.OrderItemResponse;
 import com.suranjan.mas.order.dto.OrderResponse;
 import com.suranjan.mas.order.dto.PlaceOrderRequest;
+import com.suranjan.mas.order.dto.PlaceOrderResponse;
 import com.suranjan.mas.order.entity.Order;
 import com.suranjan.mas.order.entity.OrderItem;
 import com.suranjan.mas.order.repository.OrderRepository;
@@ -21,9 +22,7 @@ import java.util.List;
 public class OrderService {
 
     private final CartRepository cartRepository;
-
     private final OrderRepository orderRepository;
-
     private final CartItemRepository cartItemRepository;
 
     public OrderService(
@@ -36,90 +35,56 @@ public class OrderService {
         this.cartItemRepository = cartItemRepository;
     }
 
-    public String placeOrder(
-            User user,
-            PlaceOrderRequest request
-    ) {
+    public PlaceOrderResponse placeOrder(User user, PlaceOrderRequest request) {
 
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() ->
-                        new RuntimeException("Cart not found")
-                );
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
 
         if (cart.getItems().isEmpty()) {
-
             throw new RuntimeException("Cart is empty");
         }
 
-        String paymentMethod =
-                request.getPaymentMethod();
+        String paymentMethod = request.getPaymentMethod();
 
         if (paymentMethod == null) {
-
-            throw new RuntimeException(
-                    "Payment method is required"
-            );
+            throw new RuntimeException("Payment method is required");
         }
 
         if (!paymentMethod.equalsIgnoreCase("COD")
                 && !paymentMethod.equalsIgnoreCase("RAZORPAY")) {
-
-            throw new RuntimeException(
-                    "Invalid payment method"
-            );
+            throw new RuntimeException("Invalid payment method");
         }
 
         Order order = new Order();
-
         order.setUser(user);
-
         order.setStatus("PENDING");
-
-        order.setPaymentMethod(
-                paymentMethod.toUpperCase()
-        );
-
+        order.setPaymentMethod(paymentMethod.toUpperCase());
         order.setPaymentStatus("PENDING");
-
         order.setCreatedAt(LocalDateTime.now());
 
-        List<OrderItem> orderItems =
-                new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
 
         double totalAmount = 0;
 
-        for (CartItem cartItem :
-                cart.getItems()) {
+        for (CartItem cartItem : cart.getItems()) {
 
-            OrderItem orderItem =
-                    new OrderItem();
+            OrderItem orderItem = new OrderItem();
 
             orderItem.setOrder(order);
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getProduct().getPrice());
 
-            orderItem.setProduct(
-                    cartItem.getProduct()
-            );
-
-            orderItem.setQuantity(
-                    cartItem.getQuantity()
-            );
-
-            orderItem.setPrice(
-                    cartItem.getProduct().getPrice()
-            );
-
-            totalAmount +=
-                    cartItem.getProduct().getPrice()
-                            * cartItem.getQuantity();
+            totalAmount += cartItem.getProduct().getPrice()
+                    * cartItem.getQuantity();
 
             orderItems.add(orderItem);
         }
 
         order.setTotalAmount(totalAmount);
-
         order.setItems(orderItems);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
         List<CartItem> cartItemsToDelete =
                 new ArrayList<>(cart.getItems());
@@ -130,12 +95,13 @@ public class OrderService {
 
         cartRepository.save(cart);
 
-        return "Order placed successfully";
+        return new PlaceOrderResponse(
+                "Order placed successfully",
+                savedOrder.getId()
+        );
     }
 
-    public List<OrderResponse> getOrders(
-            User user
-    ) {
+    public List<OrderResponse> getOrders(User user) {
 
         return orderRepository.findByUser(user)
                 .stream()
@@ -167,24 +133,13 @@ public class OrderService {
                 .toList();
     }
 
-    public OrderResponse getOrderById(
-            User user,
-            Long orderId
-    ) {
+    public OrderResponse getOrderById(User user, Long orderId) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Order not found"
-                        )
-                );
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (!order.getUser().getId()
-                .equals(user.getId())) {
-
-            throw new RuntimeException(
-                    "Unauthorized access"
-            );
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access");
         }
 
         List<OrderItemResponse> items =
@@ -211,17 +166,10 @@ public class OrderService {
         );
     }
 
-    public String updateOrderStatus(
-            Long orderId,
-            String status
-    ) {
+    public String updateOrderStatus(Long orderId, String status) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Order not found"
-                        )
-                );
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         order.setStatus(status);
 
@@ -230,32 +178,17 @@ public class OrderService {
         return "Order status updated";
     }
 
-    public String cancelOrder(
-            User user,
-            Long orderId
-    ) {
+    public String cancelOrder(User user, Long orderId) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Order not found"
-                        )
-                );
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (!order.getUser().getId()
-                .equals(user.getId())) {
-
-            throw new RuntimeException(
-                    "Unauthorized access"
-            );
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access");
         }
 
-        if (order.getStatus()
-                .equalsIgnoreCase("DELIVERED")) {
-
-            throw new RuntimeException(
-                    "Delivered order cannot be cancelled"
-            );
+        if (order.getStatus().equalsIgnoreCase("DELIVERED")) {
+            throw new RuntimeException("Delivered order cannot be cancelled");
         }
 
         order.setStatus("CANCELLED");
