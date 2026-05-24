@@ -75,7 +75,8 @@ public class CartService {
                         item.getProduct().getId(),
                         item.getProduct().getName(),
                         item.getProduct().getPrice(),
-                        item.getQuantity()
+                        item.getQuantity(),
+                        item.getProduct().getImageUrl()
                 ))
                 .toList();
 
