@@ -12,6 +12,7 @@ import com.suranjan.mas.order.dto.PlaceOrderResponse;
 import com.suranjan.mas.order.entity.Order;
 import com.suranjan.mas.order.entity.OrderItem;
 import com.suranjan.mas.order.repository.OrderRepository;
+import com.suranjan.mas.product.entity.Product;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -68,6 +69,10 @@ public class OrderService {
 
         for (CartItem cartItem : cart.getItems()) {
 
+            if (cartItem.getProduct().getQuantity() < cartItem.getQuantity()) {
+                throw new RuntimeException("Insufficient stock");
+            }
+
             OrderItem orderItem = new OrderItem();
 
             orderItem.setOrder(order);
@@ -85,6 +90,16 @@ public class OrderService {
         order.setItems(orderItems);
 
         Order savedOrder = orderRepository.save(order);
+
+        if (paymentMethod.equalsIgnoreCase("COD")) {
+            for (OrderItem item : savedOrder.getItems()) {
+                Product product = item.getProduct();
+
+                product.setQuantity(
+                        product.getQuantity() - item.getQuantity()
+                );
+            }
+        }
 
         List<CartItem> cartItemsToDelete =
                 new ArrayList<>(cart.getItems());

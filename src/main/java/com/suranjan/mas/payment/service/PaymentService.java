@@ -6,6 +6,7 @@ import com.razorpay.Utils;
 import com.suranjan.mas.order.repository.OrderRepository;
 import com.suranjan.mas.payment.dto.PaymentResponse;
 import com.suranjan.mas.payment.dto.PaymentVerificationRequest;
+import com.suranjan.mas.product.entity.Product;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class PaymentService {
 
     private final RazorpayClient razorpayClient;
-
     private final OrderRepository orderRepository;
 
     @Value("${razorpay.key.secret}")
@@ -38,9 +38,7 @@ public class PaymentService {
         JSONObject options = new JSONObject();
 
         options.put("amount", orderEntity.getTotalAmount() * 100);
-
         options.put("currency", "INR");
-
         options.put("receipt", "order_" + orderId);
 
         Order razorpayOrder =
@@ -59,20 +57,9 @@ public class PaymentService {
 
         JSONObject options = new JSONObject();
 
-        options.put(
-                "razorpay_order_id",
-                request.getRazorpayOrderId()
-        );
-
-        options.put(
-                "razorpay_payment_id",
-                request.getRazorpayPaymentId()
-        );
-
-        options.put(
-                "razorpay_signature",
-                request.getRazorpaySignature()
-        );
+        options.put("razorpay_order_id", request.getRazorpayOrderId());
+        options.put("razorpay_payment_id", request.getRazorpayPaymentId());
+        options.put("razorpay_signature", request.getRazorpaySignature());
 
         boolean isValid =
                 Utils.verifyPaymentSignature(
@@ -81,26 +68,30 @@ public class PaymentService {
                 );
 
         if (!isValid) {
-            throw new RuntimeException(
-                    "Invalid payment signature"
-            );
+            throw new RuntimeException("Invalid payment signature");
         }
 
         com.suranjan.mas.order.entity.Order order =
-                orderRepository.findById(
-                                request.getOrderId()
-                        )
+                orderRepository.findById(request.getOrderId())
                         .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Order not found"
-                                ));
+                                new RuntimeException("Order not found"));
 
-        order.setPaymentId(
-                request.getRazorpayPaymentId()
-        );
+        if (!order.getPaymentStatus().equalsIgnoreCase("PAID")) {
+            order.getItems().forEach(item -> {
+                Product product = item.getProduct();
 
+                if (product.getQuantity() < item.getQuantity()) {
+                    throw new RuntimeException("Insufficient stock");
+                }
+
+                product.setQuantity(
+                        product.getQuantity() - item.getQuantity()
+                );
+            });
+        }
+
+        order.setPaymentId(request.getRazorpayPaymentId());
         order.setPaymentMethod("RAZORPAY");
-
         order.setPaymentStatus("PAID");
 
         orderRepository.save(order);
