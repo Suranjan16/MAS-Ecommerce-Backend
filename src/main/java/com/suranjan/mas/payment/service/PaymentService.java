@@ -2,17 +2,23 @@ package com.suranjan.mas.payment.service;
 
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
+import com.razorpay.Utils;
 import com.suranjan.mas.order.repository.OrderRepository;
 import com.suranjan.mas.payment.dto.PaymentResponse;
 import com.suranjan.mas.payment.dto.PaymentVerificationRequest;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentService {
 
     private final RazorpayClient razorpayClient;
+
     private final OrderRepository orderRepository;
+
+    @Value("${razorpay.key.secret}")
+    private String razorpaySecret;
 
     public PaymentService(
             RazorpayClient razorpayClient,
@@ -32,7 +38,9 @@ public class PaymentService {
         JSONObject options = new JSONObject();
 
         options.put("amount", orderEntity.getTotalAmount() * 100);
+
         options.put("currency", "INR");
+
         options.put("receipt", "order_" + orderId);
 
         Order razorpayOrder =
@@ -47,7 +55,36 @@ public class PaymentService {
 
     public String verifyPayment(
             PaymentVerificationRequest request
-    ) {
+    ) throws Exception {
+
+        JSONObject options = new JSONObject();
+
+        options.put(
+                "razorpay_order_id",
+                request.getRazorpayOrderId()
+        );
+
+        options.put(
+                "razorpay_payment_id",
+                request.getRazorpayPaymentId()
+        );
+
+        options.put(
+                "razorpay_signature",
+                request.getRazorpaySignature()
+        );
+
+        boolean isValid =
+                Utils.verifyPaymentSignature(
+                        options,
+                        razorpaySecret
+                );
+
+        if (!isValid) {
+            throw new RuntimeException(
+                    "Invalid payment signature"
+            );
+        }
 
         com.suranjan.mas.order.entity.Order order =
                 orderRepository.findById(
