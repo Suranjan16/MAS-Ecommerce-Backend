@@ -7,7 +7,6 @@ public class UserProfileResponse {
     private String name;
     private LocalDate dob;
     private String gender;
-    private String address;
 
     public String getName() {
         return name;
@@ -21,10 +20,6 @@ public class UserProfileResponse {
         return gender;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -35,9 +30,5 @@ public class UserProfileResponse {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 }

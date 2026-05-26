@@ -16,9 +16,6 @@ public class UserProfile {
     private LocalDate dob;
     private String gender;
 
-    @Column(length = 1000)
-    private String address;
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -39,10 +36,6 @@ public class UserProfile {
         return gender;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public User getUser() {
         return user;
     }
@@ -61,10 +54,6 @@ public class UserProfile {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public void setUser(User user) {

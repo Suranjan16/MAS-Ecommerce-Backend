@@ -51,7 +51,6 @@ public class UserProfileService {
         response.setName(profile.getName());
         response.setDob(profile.getDob());
         response.setGender(profile.getGender());
-        response.setAddress(profile.getAddress());
 
         return response;
     }
@@ -79,8 +78,6 @@ public class UserProfileService {
         profile.setName(request.getName());
         profile.setDob(request.getDob());
         profile.setGender(request.getGender());
-        profile.setAddress(request.getAddress());
-
         profile.setUser(user);
 
         userProfileRepository.save(profile);
