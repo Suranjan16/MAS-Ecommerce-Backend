@@ -129,7 +129,8 @@ public class OrderService {
                                             new OrderItemResponse(
                                                     item.getProduct().getName(),
                                                     item.getQuantity(),
-                                                    item.getPrice()
+                                                    item.getPrice(),
+                                                    item.getProduct().getImageUrl()
                                             )
                                     )
                                     .toList();
@@ -164,7 +165,8 @@ public class OrderService {
                                 new OrderItemResponse(
                                         item.getProduct().getName(),
                                         item.getQuantity(),
-                                        item.getPrice()
+                                        item.getPrice(),
+                                        item.getProduct().getImageUrl()
                                 )
                         )
                         .toList();
