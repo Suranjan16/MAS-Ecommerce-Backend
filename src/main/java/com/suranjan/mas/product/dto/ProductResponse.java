@@ -3,16 +3,24 @@ package com.suranjan.mas.product.dto;
 public class ProductResponse {
 
     private Long id;
+
     private String name;
+
     private String category;
+
+    private String subCategory;
+
     private Double price;
+
     private Integer quantity;
+
     private String imageUrl;
 
     public ProductResponse(
             Long id,
             String name,
             String category,
+            String subCategory,
             Double price,
             Integer quantity,
             String imageUrl
@@ -20,6 +28,7 @@ public class ProductResponse {
         this.id = id;
         this.name = name;
         this.category = category;
+        this.subCategory = subCategory;
         this.price = price;
         this.quantity = quantity;
         this.imageUrl = imageUrl;
@@ -35,6 +44,10 @@ public class ProductResponse {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getSubCategory() {
+        return subCategory;
     }
 
     public Double getPrice() {
