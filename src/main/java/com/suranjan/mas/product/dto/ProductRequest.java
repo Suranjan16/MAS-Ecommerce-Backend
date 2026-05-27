@@ -6,6 +6,8 @@ public class ProductRequest {
 
     private String category;
 
+    private String section;
+
     private String subCategory;
 
     private Double price;
@@ -20,6 +22,10 @@ public class ProductRequest {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getSection() {
+        return section;
     }
 
     public String getSubCategory() {
@@ -44,6 +50,10 @@ public class ProductRequest {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
     public void setSubCategory(String subCategory) {

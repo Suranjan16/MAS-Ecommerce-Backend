@@ -24,6 +24,7 @@ public class ProductService {
 
         product.setName(request.getName());
         product.setCategory(request.getCategory());
+        product.setSection(request.getSection());
         product.setSubCategory(request.getSubCategory());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
@@ -35,6 +36,7 @@ public class ProductService {
                 savedProduct.getId(),
                 savedProduct.getName(),
                 savedProduct.getCategory(),
+                savedProduct.getSection(),
                 savedProduct.getSubCategory(),
                 savedProduct.getPrice(),
                 savedProduct.getQuantity(),
@@ -56,6 +58,7 @@ public class ProductService {
 
         existingProduct.setName(product.getName());
         existingProduct.setCategory(product.getCategory());
+        existingProduct.setSection(product.getSection());
         existingProduct.setSubCategory(product.getSubCategory());
         existingProduct.setPrice(product.getPrice());
         existingProduct.setQuantity(product.getQuantity());
@@ -111,6 +114,7 @@ public class ProductService {
 
     public Page<Product> getProductsAdvanced(
             String category,
+            String section,
             String subCategory,
             String name,
             Double minPrice,
@@ -139,6 +143,13 @@ public class ProductService {
             specification = specification.and(
                     (root, query, cb) ->
                             cb.equal(root.get("category"), category)
+            );
+        }
+
+        if (section != null && !section.isBlank()) {
+            specification = specification.and(
+                    (root, query, cb) ->
+                            cb.equal(root.get("section"), section)
             );
         }
 

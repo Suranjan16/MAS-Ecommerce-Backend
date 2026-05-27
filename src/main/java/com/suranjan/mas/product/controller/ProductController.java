@@ -93,6 +93,7 @@ public class ProductController {
     @GetMapping("/advanced")
     public Page<Product> getProductsAdvanced(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String section,
             @RequestParam(required = false) String subCategory,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,
@@ -104,6 +105,7 @@ public class ProductController {
     ) {
         return service.getProductsAdvanced(
                 category,
+                section,
                 subCategory,
                 name,
                 minPrice,
