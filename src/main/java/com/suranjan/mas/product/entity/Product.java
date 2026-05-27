@@ -11,6 +11,7 @@ public class Product {
 
     private String name;
     private String category;
+    private String subCategory;
     private Double price;
     private Integer quantity;
     private String imageUrl;
@@ -27,6 +28,10 @@ public class Product {
         return category;
     }
 
+    public String getSubCategory() {
+        return subCategory;
+    }
+
     public Double getPrice() {
         return price;
     }
@@ -39,12 +44,20 @@ public class Product {
         return imageUrl;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setSubCategory(String subCategory) {
+        this.subCategory = subCategory;
     }
 
     public void setPrice(Double price) {

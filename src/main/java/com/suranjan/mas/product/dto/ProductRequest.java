@@ -3,9 +3,15 @@ package com.suranjan.mas.product.dto;
 public class ProductRequest {
 
     private String name;
+
     private String category;
+
+    private String subCategory;
+
     private Double price;
+
     private Integer quantity;
+
     private String imageUrl;
 
     public String getName() {
@@ -14,6 +20,10 @@ public class ProductRequest {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getSubCategory() {
+        return subCategory;
     }
 
     public Double getPrice() {
@@ -34,6 +44,10 @@ public class ProductRequest {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public void setSubCategory(String subCategory) {
+        this.subCategory = subCategory;
     }
 
     public void setPrice(Double price) {

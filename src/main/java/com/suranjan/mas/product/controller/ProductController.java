@@ -36,23 +36,31 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable("id") Long id,@Valid @RequestBody Product product) {
-        return service.updateProduct(id,product);
+    public Product updateProduct(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody Product product
+    ) {
+        return service.updateProduct(id, product);
     }
 
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
         service.deleteProduct(id);
+
         return "Product Deleted Successfully";
     }
 
     @GetMapping("/category/{category}")
-    public List<Product> getProductByCategory(@PathVariable("category") String category) {
+    public List<Product> getProductByCategory(
+            @PathVariable("category") String category
+    ) {
         return service.getProductByCategory(category);
     }
 
     @GetMapping("/search/{name}")
-    public List<Product> getProductByName(@PathVariable("name") String name) {
+    public List<Product> getProductByName(
+            @PathVariable("name") String name
+    ) {
         return service.getProductByName(name);
     }
 
@@ -61,22 +69,31 @@ public class ProductController {
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam String sort,
-            @RequestParam String direction) {
-
-        return service.getProductsWithPaginationAndSorting(page, size, sort, direction);
+            @RequestParam String direction
+    ) {
+        return service.getProductsWithPaginationAndSorting(
+                page,
+                size,
+                sort,
+                direction
+        );
     }
 
     @GetMapping("/filter")
     public List<Product> getProductsByPrice(
             @RequestParam double minPrice,
-            @RequestParam double maxPrice) {
-
-        return service.getProductsByPriceRange(minPrice, maxPrice);
+            @RequestParam double maxPrice
+    ) {
+        return service.getProductsByPriceRange(
+                minPrice,
+                maxPrice
+        );
     }
 
     @GetMapping("/advanced")
     public Page<Product> getProductsAdvanced(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String subCategory,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -87,6 +104,7 @@ public class ProductController {
     ) {
         return service.getProductsAdvanced(
                 category,
+                subCategory,
                 name,
                 minPrice,
                 maxPrice,
