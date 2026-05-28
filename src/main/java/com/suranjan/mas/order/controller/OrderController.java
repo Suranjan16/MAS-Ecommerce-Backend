@@ -63,12 +63,18 @@ public class OrderController {
         return orderService.getOrderById(user, orderId);
     }
 
-    @PutMapping("/status/{orderId}")
+    @PutMapping("/admin/{orderId}/status")
     public String updateOrderStatus(
             @PathVariable Long orderId,
             @RequestParam String status
     ) {
         return orderService.updateOrderStatus(orderId, status);
+    }
+
+    @GetMapping("/admin/all")
+    public List<OrderResponse> getAllOrdersForAdmin() {
+
+        return orderService.getAllOrdersForAdmin();
     }
 
     @PutMapping("/cancel/{orderId}")

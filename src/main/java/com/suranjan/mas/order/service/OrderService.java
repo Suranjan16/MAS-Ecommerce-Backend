@@ -183,8 +183,10 @@ public class OrderService {
         );
     }
 
-    public String updateOrderStatus(Long orderId, String status) {
-
+    public String updateOrderStatus(
+            Long orderId,
+            String status
+    ) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
@@ -192,7 +194,40 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        return "Order status updated";
+        return "Order status updated successfully";
+    }
+
+    public List<OrderResponse> getAllOrdersForAdmin() {
+
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(order -> {
+                    List<OrderItemResponse> items =
+                            order.getItems()
+                                    .stream()
+                                    .map(item ->
+                                            new OrderItemResponse(
+                                                    item.getProduct().getName(),
+                                                    item.getQuantity(),
+                                                    item.getPrice(),
+                                                    item.getProduct().getImageUrl()
+                                            )
+                                    )
+                                    .toList();
+
+                    return new OrderResponse(
+                            order.getId(),
+                            order.getTotalAmount(),
+                            order.getStatus(),
+                            order.getCreatedAt(),
+                            items,
+                            order.getPaymentMethod(),
+                            order.getPaymentStatus(),
+                            order.getPaymentId()
+                    );
+                })
+                .toList();
     }
 
     public String cancelOrder(User user, Long orderId) {
