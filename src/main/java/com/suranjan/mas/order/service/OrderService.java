@@ -2,7 +2,6 @@ package com.suranjan.mas.order.service;
 
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.cart.entity.Cart;
-import com.suranjan.mas.cart.entity.CartItem;
 import com.suranjan.mas.cart.repository.CartRepository;
 import com.suranjan.mas.order.dto.OrderItemResponse;
 import com.suranjan.mas.order.dto.OrderResponse;
@@ -62,7 +61,11 @@ public class OrderService {
                 request.getPaymentId()
         );
 
-        order.setPaymentStatus("PAID");
+        if (request.getPaymentMethod().equals("ONLINE")) {
+            order.setPaymentStatus("PAID");
+        } else {
+            order.setPaymentStatus("PENDING");
+        }
 
         order.setFullName(request.getFullName());
         order.setPhone(request.getPhone());
