@@ -3,7 +3,6 @@ package com.suranjan.mas.order.service;
 import com.suranjan.mas.auth.entity.User;
 import com.suranjan.mas.cart.entity.Cart;
 import com.suranjan.mas.cart.entity.CartItem;
-import com.suranjan.mas.cart.repository.CartItemRepository;
 import com.suranjan.mas.cart.repository.CartRepository;
 import com.suranjan.mas.order.dto.OrderItemResponse;
 import com.suranjan.mas.order.dto.OrderResponse;
@@ -13,10 +12,10 @@ import com.suranjan.mas.order.entity.Order;
 import com.suranjan.mas.order.entity.OrderItem;
 import com.suranjan.mas.order.repository.OrderRepository;
 import com.suranjan.mas.product.entity.Product;
+import com.suranjan.mas.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,87 +23,112 @@ public class OrderService {
 
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
-    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
     public OrderService(
             CartRepository cartRepository,
             OrderRepository orderRepository,
-            CartItemRepository cartItemRepository
+            ProductRepository productRepository
     ) {
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
-        this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
     }
 
-    public PlaceOrderResponse placeOrder(User user, PlaceOrderRequest request) {
+    public PlaceOrderResponse placeOrder(
+            User user,
+            PlaceOrderRequest request
+    ) {
 
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Cart not found"));
 
         if (cart.getItems().isEmpty()) {
             throw new RuntimeException("Cart is empty");
         }
 
-        String paymentMethod = request.getPaymentMethod();
-
-        if (paymentMethod == null) {
-            throw new RuntimeException("Payment method is required");
-        }
-
-        if (!paymentMethod.equalsIgnoreCase("COD")
-                && !paymentMethod.equalsIgnoreCase("RAZORPAY")) {
-            throw new RuntimeException("Invalid payment method");
-        }
-
         Order order = new Order();
+
         order.setUser(user);
-        order.setStatus("PENDING");
-        order.setPaymentMethod(paymentMethod.toUpperCase());
-        order.setPaymentStatus("PENDING");
+        order.setStatus("PLACED");
         order.setCreatedAt(LocalDateTime.now());
 
-        List<OrderItem> orderItems = new ArrayList<>();
+        order.setPaymentMethod(
+                request.getPaymentMethod()
+        );
 
-        double totalAmount = 0;
+        order.setPaymentId(
+                request.getPaymentId()
+        );
 
-        for (CartItem cartItem : cart.getItems()) {
+        order.setPaymentStatus("PAID");
 
-            if (cartItem.getProduct().getQuantity() < cartItem.getQuantity()) {
-                throw new RuntimeException("Insufficient stock");
-            }
+        order.setFullName(request.getFullName());
+        order.setPhone(request.getPhone());
+        order.setAddress(request.getAddress());
+        order.setCity(request.getCity());
+        order.setState(request.getState());
+        order.setPincode(request.getPincode());
 
-            OrderItem orderItem = new OrderItem();
+        List<OrderItem> orderItems =
+                cart.getItems()
+                        .stream()
+                        .map(cartItem -> {
 
-            orderItem.setOrder(order);
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getProduct().getPrice());
+                            Product product =
+                                    cartItem.getProduct();
 
-            totalAmount += cartItem.getProduct().getPrice()
-                    * cartItem.getQuantity();
+                            if (product.getQuantity() <
+                                    cartItem.getQuantity()) {
 
-            orderItems.add(orderItem);
-        }
+                                throw new RuntimeException(
+                                        "Not enough stock for product: "
+                                                + product.getName()
+                                );
+                            }
 
-        order.setTotalAmount(totalAmount);
+                            product.setQuantity(
+                                    product.getQuantity()
+                                            - cartItem.getQuantity()
+                            );
+
+                            productRepository.save(product);
+
+                            OrderItem orderItem =
+                                    new OrderItem();
+
+                            orderItem.setOrder(order);
+
+                            orderItem.setProduct(product);
+
+                            orderItem.setQuantity(
+                                    cartItem.getQuantity()
+                            );
+
+                            orderItem.setPrice(
+                                    product.getPrice()
+                                            * cartItem.getQuantity()
+                            );
+
+                            return orderItem;
+
+                        })
+                        .toList();
+
+        double totalAmount =
+                orderItems.stream()
+                        .mapToDouble(
+                                OrderItem::getPrice
+                        )
+                        .sum();
+
         order.setItems(orderItems);
 
-        Order savedOrder = orderRepository.save(order);
+        order.setTotalAmount(totalAmount);
 
-        if (paymentMethod.equalsIgnoreCase("COD")) {
-            for (OrderItem item : savedOrder.getItems()) {
-                Product product = item.getProduct();
-
-                product.setQuantity(
-                        product.getQuantity() - item.getQuantity()
-                );
-            }
-        }
-
-        List<CartItem> cartItemsToDelete =
-                new ArrayList<>(cart.getItems());
-
-        cartItemRepository.deleteAll(cartItemsToDelete);
+        Order savedOrder =
+                orderRepository.save(order);
 
         cart.getItems().clear();
 
@@ -118,8 +142,10 @@ public class OrderService {
 
     public List<OrderResponse> getOrders(User user) {
 
-        return orderRepository.findByUser(user)
-                .stream()
+        List<Order> orders =
+                orderRepository.findByUser(user);
+
+        return orders.stream()
                 .map(order -> {
 
                     List<OrderItemResponse> items =
@@ -143,19 +169,37 @@ public class OrderService {
                             items,
                             order.getPaymentMethod(),
                             order.getPaymentStatus(),
-                            order.getPaymentId()
+                            order.getPaymentId(),
+                            order.getFullName(),
+                            order.getPhone(),
+                            order.getAddress(),
+                            order.getCity(),
+                            order.getState(),
+                            order.getPincode()
                     );
+
                 })
                 .toList();
     }
 
-    public OrderResponse getOrderById(User user, Long orderId) {
+    public OrderResponse getOrderById(
+            User user,
+            Long orderId
+    ) {
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order =
+                orderRepository.findById(orderId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Order not found"
+                                ));
 
-        if (!order.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized access");
+        if (!order.getUser().getId()
+                .equals(user.getId())) {
+
+            throw new RuntimeException(
+                    "Unauthorized access"
+            );
         }
 
         List<OrderItemResponse> items =
@@ -179,30 +223,71 @@ public class OrderService {
                 items,
                 order.getPaymentMethod(),
                 order.getPaymentStatus(),
-                order.getPaymentId()
+                order.getPaymentId(),
+                order.getFullName(),
+                order.getPhone(),
+                order.getAddress(),
+                order.getCity(),
+                order.getState(),
+                order.getPincode()
         );
     }
 
-    public String updateOrderStatus(
-            Long orderId,
-            String status
+    public String cancelOrder(
+            User user,
+            Long orderId
     ) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        order.setStatus(status);
+        Order order =
+                orderRepository.findById(orderId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Order not found"
+                                ));
+
+        if (!order.getUser().getId()
+                .equals(user.getId())) {
+
+            throw new RuntimeException(
+                    "Unauthorized access"
+            );
+        }
+
+        if (order.getStatus()
+                .equals("DELIVERED")) {
+
+            throw new RuntimeException(
+                    "Delivered order cannot be cancelled"
+            );
+        }
+
+        order.setStatus("CANCELLED");
+
+        for (OrderItem item : order.getItems()) {
+
+            Product product = item.getProduct();
+
+            product.setQuantity(
+                    product.getQuantity()
+                            + item.getQuantity()
+            );
+
+            productRepository.save(product);
+        }
 
         orderRepository.save(order);
 
-        return "Order status updated successfully";
+        return "Order cancelled successfully";
     }
 
     public List<OrderResponse> getAllOrdersForAdmin() {
 
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders =
+                orderRepository.findAll();
 
         return orders.stream()
                 .map(order -> {
+
                     List<OrderItemResponse> items =
                             order.getItems()
                                     .stream()
@@ -224,29 +309,35 @@ public class OrderService {
                             items,
                             order.getPaymentMethod(),
                             order.getPaymentStatus(),
-                            order.getPaymentId()
+                            order.getPaymentId(),
+                            order.getFullName(),
+                            order.getPhone(),
+                            order.getAddress(),
+                            order.getCity(),
+                            order.getState(),
+                            order.getPincode()
                     );
+
                 })
                 .toList();
     }
 
-    public String cancelOrder(User user, Long orderId) {
+    public String updateOrderStatus(
+            Long orderId,
+            String status
+    ) {
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order =
+                orderRepository.findById(orderId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Order not found"
+                                ));
 
-        if (!order.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized access");
-        }
-
-        if (order.getStatus().equalsIgnoreCase("DELIVERED")) {
-            throw new RuntimeException("Delivered order cannot be cancelled");
-        }
-
-        order.setStatus("CANCELLED");
+        order.setStatus(status);
 
         orderRepository.save(order);
 
-        return "Order cancelled successfully";
+        return "Order status updated successfully";
     }
 }
