@@ -1,8 +1,16 @@
 package com.suranjan.mas.auth.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class LoginRequest {
-    public String email;
-    public String password;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Enter a valid email address")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 
     public LoginRequest() {
     }

@@ -11,20 +11,59 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFound(ProductNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> handleProductNotFound(
+            ProductNotFoundException ex
+    ) {
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, String>> handleValidationErrors(
+            MethodArgumentNotValidException ex
+    ) {
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), error.getDefaultMessage());
-        });
+        Map<String, String> errors =
+                new HashMap<>();
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error -> {
+                    errors.put(
+                            error.getField(),
+                            error.getDefaultMessage()
+                    );
+                });
+
+        return new ResponseEntity<>(
+                errors,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(
+            RuntimeException ex
+    ) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(
+            Exception ex
+    ) {
+
+        return new ResponseEntity<>(
+                "Something went wrong",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 }

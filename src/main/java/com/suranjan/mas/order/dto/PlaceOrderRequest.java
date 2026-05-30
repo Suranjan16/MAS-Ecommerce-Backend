@@ -1,21 +1,34 @@
 package com.suranjan.mas.order.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 public class PlaceOrderRequest {
 
     private String paymentMethod;
 
     private String paymentId;
 
+    @NotBlank(message = "Full name is required")
     private String fullName;
 
+    @NotBlank(message = "Phone number is required")
+    @Pattern(
+            regexp = "^(\\+91)?[6-9]\\d{9}$",
+            message = "Enter a valid Indian phone number"
+    )
     private String phone;
 
+    @NotBlank(message = "Address is required")
     private String address;
 
+    @NotBlank(message = "City is required")
     private String city;
 
+    @NotBlank(message = "State is required")
     private String state;
 
+    @NotBlank(message = "Pincode is required")
     private String pincode;
 
     public String getPaymentMethod() {

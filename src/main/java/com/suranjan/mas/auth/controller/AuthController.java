@@ -5,6 +5,7 @@ import com.suranjan.mas.auth.dto.LoginRequest;
 import com.suranjan.mas.auth.dto.SignupRequest;
 import com.suranjan.mas.auth.dto.UserResponse;
 import com.suranjan.mas.auth.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +18,12 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public UserResponse signup(@RequestBody SignupRequest signupRequest) {
+    public UserResponse signup(@Valid @RequestBody SignupRequest signupRequest) {
         return service.signup(signupRequest);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return service.login(request);
     }
 }
