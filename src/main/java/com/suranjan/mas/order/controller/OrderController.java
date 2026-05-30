@@ -6,6 +6,7 @@ import com.suranjan.mas.order.dto.OrderResponse;
 import com.suranjan.mas.order.dto.PlaceOrderRequest;
 import com.suranjan.mas.order.dto.PlaceOrderResponse;
 import com.suranjan.mas.order.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class OrderController {
 
     @PostMapping("/place")
     public PlaceOrderResponse placeOrder(
-            @RequestBody PlaceOrderRequest request,
+            @Valid @RequestBody PlaceOrderRequest request,
             Authentication authentication
     ) {
         String email = authentication.getName();
