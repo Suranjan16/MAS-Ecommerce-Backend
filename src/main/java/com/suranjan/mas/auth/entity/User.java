@@ -20,19 +20,33 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private boolean verified = false;
+
+    private String verificationToken;
+
     // Constructors
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, Role role) {
+    public User(
+            Long id,
+            String name,
+            String email,
+            String password,
+            Role role,
+            boolean verified,
+            String verificationToken
+    ) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.verified = verified;
+        this.verificationToken = verificationToken;
     }
 
-    // Getters & Setters
+// Getters & Setters
 
     public Long getId() {
         return id;
@@ -72,5 +86,23 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(
+            String verificationToken
+    ) {
+        this.verificationToken = verificationToken;
     }
 }

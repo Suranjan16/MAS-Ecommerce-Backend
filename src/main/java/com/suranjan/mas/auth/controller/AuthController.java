@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
     private final AuthService service;
 
     public AuthController(AuthService service) {
@@ -18,12 +19,24 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public UserResponse signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public UserResponse signup(
+            @Valid @RequestBody SignupRequest signupRequest
+    ) {
         return service.signup(signupRequest);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+    public AuthResponse login(
+            @Valid @RequestBody LoginRequest request
+    ) {
         return service.login(request);
     }
+
+    @GetMapping("/verify")
+    public String verifyEmail(
+            @RequestParam String token
+    ) {
+        return service.verifyEmail(token);
+    }
+
 }
