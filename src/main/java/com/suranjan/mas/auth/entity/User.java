@@ -24,6 +24,8 @@ public class User {
 
     private String verificationToken;
 
+    private String resetPasswordToken;
+
     // Constructors
     public User() {
     }
@@ -35,7 +37,8 @@ public class User {
             String password,
             Role role,
             boolean verified,
-            String verificationToken
+            String verificationToken,
+            String resetPasswordToken
     ) {
         this.id = id;
         this.name = name;
@@ -44,6 +47,7 @@ public class User {
         this.role = role;
         this.verified = verified;
         this.verificationToken = verificationToken;
+        this.resetPasswordToken = resetPasswordToken;
     }
 
 // Getters & Setters
@@ -104,5 +108,13 @@ public class User {
             String verificationToken
     ) {
         this.verificationToken = verificationToken;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 }
