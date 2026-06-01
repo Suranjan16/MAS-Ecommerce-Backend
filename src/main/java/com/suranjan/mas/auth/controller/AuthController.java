@@ -1,11 +1,15 @@
 package com.suranjan.mas.auth.controller;
 
 import com.suranjan.mas.auth.dto.AuthResponse;
+import com.suranjan.mas.auth.dto.ForgotPasswordRequest;
 import com.suranjan.mas.auth.dto.LoginRequest;
+import com.suranjan.mas.auth.dto.ResetPasswordRequest;
 import com.suranjan.mas.auth.dto.SignupRequest;
 import com.suranjan.mas.auth.dto.UserResponse;
 import com.suranjan.mas.auth.service.AuthService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,4 +43,17 @@ public class AuthController {
         return service.verifyEmail(token);
     }
 
+    @PostMapping("/forgot-password")
+    public String forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request
+    ) {
+        return service.forgotPassword(request);
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request
+    ) {
+        return service.resetPassword(request);
+    }
 }

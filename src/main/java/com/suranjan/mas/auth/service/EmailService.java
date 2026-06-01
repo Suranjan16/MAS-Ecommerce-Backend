@@ -39,4 +39,31 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendPasswordResetEmail(
+            String toEmail,
+            String resetToken
+    ) {
+
+        String subject = "Reset Your MAS Password";
+
+        String resetLink =
+                "http://localhost:5173/reset-password?token="
+                        + resetToken;
+
+        String body =
+                "We received a request to reset your password.\n\n" +
+                        "Click the link below to set a new password:\n\n" +
+                        resetLink +
+                        "\n\nIf you did not request a password reset, please ignore this email.";
+
+        SimpleMailMessage message =
+                new SimpleMailMessage();
+
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
+
+        mailSender.send(message);
+    }
 }

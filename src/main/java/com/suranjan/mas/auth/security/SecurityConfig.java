@@ -59,7 +59,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/signup",
                                 "/auth/login",
-                                "/auth/verify"
+                                "/auth/verify",
+                                "/auth/forgot-password",
+                                "/auth/reset-password"
                         ).permitAll()
 
                         .requestMatchers(
