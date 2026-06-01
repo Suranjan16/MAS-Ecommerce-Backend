@@ -144,3 +144,5 @@ public class SecurityConfig {
         return source;
     }
 }
+
+// updated application.properties to avoid gitguardian conflicts
