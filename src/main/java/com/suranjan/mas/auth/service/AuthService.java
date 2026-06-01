@@ -1,11 +1,7 @@
 package com.suranjan.mas.auth.service;
 
-import com.suranjan.mas.auth.dto.AuthResponse;
-import com.suranjan.mas.auth.dto.LoginRequest;
-import com.suranjan.mas.auth.dto.SignupRequest;
-import com.suranjan.mas.auth.dto.UserResponse;
-import com.suranjan.mas.auth.entity.Role;
-import com.suranjan.mas.auth.entity.User;
+import com.suranjan.mas.auth.dto.*;
+import com.suranjan.mas.auth.entity.*;
 import com.suranjan.mas.auth.repository.UserRepository;
 import com.suranjan.mas.auth.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -123,6 +119,67 @@ public class AuthService {
         repository.save(user);
 
         return "Email verified successfully";
+    }
+
+    public String forgotPassword(
+            ForgotPasswordRequest request
+    ) {
+
+        User user = repository.findByEmail(
+                        request.getEmail()
+                )
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"
+                        ));
+
+        String resetToken =
+                UUID.randomUUID().toString();
+
+        user.setResetPasswordToken(
+                resetToken
+        );
+
+        repository.save(user);
+
+        emailService.sendPasswordResetEmail(
+                user.getEmail(),
+                resetToken
+        );
+
+        return "Password reset link sent to your email";
+    }
+
+    public String resetPassword(ResetPasswordRequest request) {
+
+        User user =
+                repository.findByResetPasswordToken(
+                        request.getToken()
+                ).orElseThrow(() ->
+                        new RuntimeException("Invalid reset token"));
+
+        System.out.println("Before update:");
+        System.out.println("Verified = " + user.isVerified());
+        System.out.println("Password = " + user.getPassword());
+
+        String encodedPassword =
+                passwordEncoder.encode(
+                        request.getNewPassword()
+                );
+
+        System.out.println("Encoded Password = " + encodedPassword);
+
+        user.setPassword(encodedPassword);
+
+        user.setResetPasswordToken(null);
+
+        repository.save(user);
+
+        System.out.println("After save:");
+        System.out.println("Verified = " + user.isVerified());
+        System.out.println("Password = " + user.getPassword());
+
+        return "Password reset successful";
     }
 
 }

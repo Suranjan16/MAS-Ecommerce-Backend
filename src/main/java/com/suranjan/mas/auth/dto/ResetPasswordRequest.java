@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 public class ResetPasswordRequest {
     private String token;
 
-    private String password;
+    private String newPassword;
 
     public ResetPasswordRequest() {
     }
@@ -18,11 +18,11 @@ public class ResetPasswordRequest {
         this.token = token;
     }
 
-    public String getPassword() {
-        return password;
+    public String getNewPassword() {
+        return newPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 }
