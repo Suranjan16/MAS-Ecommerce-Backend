@@ -37,7 +37,11 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(body);
 
+        System.out.println("Before mail send");
+
         mailSender.send(message);
+
+        System.out.println("After mail send");
     }
 
     public void sendPasswordResetEmail(
