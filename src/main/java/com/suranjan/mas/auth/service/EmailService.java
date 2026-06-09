@@ -21,7 +21,7 @@ public class EmailService {
         String subject = "Verify Your MAS Account";
 
         String verificationLink =
-                "http://localhost:8080/auth/verify?token="
+                "https://mas-ecommerce-backend-production.up.railway.app/auth/verify?token="
                         + verificationToken;
 
         String body =
