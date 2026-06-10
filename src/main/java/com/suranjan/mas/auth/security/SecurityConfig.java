@@ -117,10 +117,10 @@ public class SecurityConfig {
         CorsConfiguration config =
                 new CorsConfiguration();
 
-        config.setAllowedOrigins(
+        config.setAllowedOriginPatterns(
                 List.of(
                         "http://localhost:5173",
-                        "https://mas-ecommerce-frontend.vercel.app"
+                        "https://*.vercel.app"
                 )
         );
 
