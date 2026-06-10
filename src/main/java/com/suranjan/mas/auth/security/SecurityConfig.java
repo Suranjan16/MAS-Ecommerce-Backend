@@ -114,7 +114,10 @@ public class SecurityConfig {
                 new CorsConfiguration();
 
         config.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://mas-ecommerce-frontend.vercel.app"
+                )
         );
 
         config.setAllowedMethods(
