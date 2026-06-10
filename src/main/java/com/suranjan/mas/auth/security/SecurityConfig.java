@@ -82,6 +82,10 @@ public class SecurityConfig {
                         ).hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers(
+                                "/profile/**"
+                        ).hasAnyRole("USER", "ADMIN")
+
+                        .requestMatchers(
                                 HttpMethod.POST,
                                 "/products/**"
                         ).hasRole("ADMIN")
@@ -147,5 +151,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
-// updated application.properties to avoid gitguardian conflicts
