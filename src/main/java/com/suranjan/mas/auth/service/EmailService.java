@@ -21,7 +21,7 @@ public class EmailService {
         String subject = "Verify Your MAS Account";
 
         String verificationLink =
-                "https://mas-ecommerce-backend-production.up.railway.app/auth/verify?token="
+                "http://mas-ecosmmerce-backend-production.up.railway.app/auth/verify?token="
                         + verificationToken;
 
         String body =
@@ -37,11 +37,8 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(body);
 
-        System.out.println("Before mail send");
-
         mailSender.send(message);
 
-        System.out.println("After mail send");
     }
 
     public void sendPasswordResetEmail(
