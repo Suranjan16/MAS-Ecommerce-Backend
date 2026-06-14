@@ -49,7 +49,7 @@ public class EmailService {
         String subject = "Reset Your MAS Password";
 
         String resetLink =
-                "http://localhost:5173/reset-password?token="
+                "https://mas-ecommerce-frontend.vercel.app/reset-password?token="
                         + resetToken;
 
         String body =
